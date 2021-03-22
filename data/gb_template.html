@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Language" content="ru">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="refresh" content="">
+    <meta name="description" content="Growbox">   
+    <title>Growbox</title>
+    <link rel="stylesheet" href="template.css">
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="shortcut icon" sizes="72x72" href="img/favicon.ico" type="image/x-icon">
+    <script src="jquery.min.js"></script>
+    <script src="common.js"></script>
+    <script>
+      $(window).load(set_screen_vh);
+      $(window).resize(set_screen_vh);
+      $(window).on('load resize', set_screen_vh);
+
+      var xhr;
+      var idTimer1;
+      function refresh()
+      {
+        xhr = new(XMLHttpRequest);
+
+        xhr.open("GET", "something", true);
+        xhr.responseType = "text";
+        xhr.onload = function (oEvent) 
+        {
+            console.log("Response:\n" + xhr.responseText);
+            var json = JSON.parse(xhr.responseText);
+            document.getElementById('power_state').innerHTML = json.power_state;
+            document.getElementById('curr_time').innerHTML = json.curr_time;
+            document.getElementById('start_time').innerHTML = json.start_time;
+            document.getElementById('stop_time').innerHTML = json.stop_time;
+            //document.getElementById('inf5').innerHTML = json.smooth;      
+        }
+        xhr.send(null);
+      }
+    </script>
+  </head>
+
+  <body onload="refresh()">
+    <div class="my-body">
+
+      <div class="header-wrap">
+
+        <div class="mainmenu-btn">
+          <form method="get" action="return_mainmenu" enctype="text-plain">
+            <div class="container-navigation-btn">
+              <button class="navigation-btn navigation-btn-text" name="" value="">
+                Main menu
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="refresh-btn">
+          <div class="container-navigation-btn">
+            <button class="navigation-btn navigation-btn-text" onclick="update()">
+              Refresh
+            </button>
+          </div> 
+        </div>
+
+      </div>
+
+      <div class="header-line header-dull-side-color">
+        <h1 class="header-text">Template</h1>  
+        <div id="header_btn" class="container-header-btn">
+          <button class="header-btn header-bright-side-color" onclick="default()" value="START">
+              <pre class="header-btn-text">default</pre>
+          </button>
+        </div>  
+        <img class="header-img" alt="" src="img/set.gif">          
+      </div>
+
+      <div class="menu-wrap">
+
+
+
+
+
+      </div>
+
+      <div id="footer" class="footer-text">. 
+        <div class="container-footer">
+          <div id="footer-img" style="background-image: url('img/trees.gif');"> </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

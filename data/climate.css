@@ -1,0 +1,347 @@
+
+/* [ MENU HEADER ] */
+.climate-header-img{
+  position: absolute;
+  width: 110px; 
+  height: 120px;
+  margin-left: 180%;
+  margin-top: -12%;
+  z-index: 1;
+}
+
+/* [ MENU CELLS ] */
+.container-menu{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+  
+  flex-basis: content;
+  flex-direction: row;
+  justify-content: flex-start;
+  -moz-justify-content: flex-start;
+  
+  position: relative;
+  margin: auto;
+  margin-top: 10px;
+  flex:  0 3 15%;
+  min-width: 900px;
+  width: 70%;
+  max-width: 900px;
+
+  z-index: 1;
+  border-radius: 10px;
+  background-color: var(--mainmenu-btn-color);
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+
+  background-repeat: no-repeat;
+  background-position: 90% 0;
+  background-size: 30% 100%;
+}
+
+.cell-name{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  z-index: 1;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, var(--mainmenu-btn-color) 10%, black, black, black, black 50%, black, black, black, var(--mainmenu-btn-color) 90%) 1 100%;
+}
+
+/* [ Period Styles ] */
+.cell-value-period{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  position: absolute;
+  left: 20%;
+  width: 75%;
+  height: 100%;
+}
+
+.cell-input-period{
+  text-align: center;
+
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(to top, hsla(0, 0%, 16%, 1) 10%, black, black, black, black 50%, black, black, black, hsla(0, 0%, 16%, 1) 90%) 1 100%;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  margin-left: 26.5%;
+  min-width: 20%;
+  max-width: 26.5%;
+  height: 100%;
+  background: transparent;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-input-period:focus {
+  min-width: 33%;
+  margin-left: 24%;
+}
+
+.cell-input-period::placeholder{
+  font-family: var(--placeholder-font-family);
+  color: var(--placeholder-text-color);
+  font-size: var(--placeholder-font-size);
+}
+
+.period_label{
+  font-family: Verdana, Geneva, sans-serif;
+  color: var(--cell-label-text-color);
+  font-size: var(--placeholder-font-size);
+  /*font-weight: bold;*/
+  position: absolute;
+  left: 58%;
+  top: 37%;
+}
+
+.cell-btn-period {
+  min-width: 23.5%;
+  left: 80%;
+  top: 23.5%;
+  height: 60%;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.cell-btn-period-ok {
+  min-width: 19.5%;
+  left: 82%;
+  top: 26%;
+  height: 52%;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 1;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+  background-color:  var(--ok_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+}
+
+.cell-btn-period-error {
+  min-width: 23.5%;
+  left: 80%;
+  top: 27%;
+  height: 50%;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 1;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+  font-weight: bold;
+  background-color:  var(--err_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* [ Chart Styles ] */
+.cell-th-chart-name{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  z-index: 1;
+}
+
+.axis-name{
+  font-weight: 900;
+}
+
+.cell-temp-axis-name{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  position: absolute;
+  left: 4%;
+  top: 7%;
+  z-index: 1;
+}
+
+.cell-hum-axis-name{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  position: absolute;
+  left: 90%;
+  top: 7%;
+  z-index: 1;
+}
+
+.maxmin-container{
+  display: flex;
+  position: absolute;
+  width: 100%;
+  height: 21%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  /*background-color: #c3c3;*/
+  opacity: 0;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.maxmin-name{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+}
+
+.maxmin-text{
+  font-weight: 500;
+  font-family: var(--placeholder-font-family);
+  color: var(--placeholder-text-color);
+  font-size: 1.1rem;/*var(--placeholder-font-size);*/
+}
+
+
+.cell-th-chart{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  position: relative;
+  width: 90%;
+  height: 100%;
+  left: 5%;
+  /*top: 3%;*/
+  z-index: 1;
+}
+
+.th-chart-size{
+	width: 100%;
+	height: 70%;
+
+	margin-top: -5%;
+}
+
+.cell-btn-th-chart {
+  min-width: 20%;
+  left: 10%;
+  top: 85%;
+  height: 10%;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.btn-dates-color{
+  background-color: var(--cell-title-color);
+  opacity: 1;
+}
+
+
+.cell-dates-form{
+  position: absolute;
+
+  left: 10%;
+  top: 60%;
+  min-width: 20%;
+  height: 40%;
+  max-height: 24.5%;
+  z-index: 1;
+
+  border-radius: 10px;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.dates-select{
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  background-color: #333;
+  opacity: 0;
+}
+
+.dates-select::-webkit-scrollbar { width: 13px; height: 13px; background-color: #fafafa;}
+.dates-select::-webkit-scrollbar-button {  background-color: #666; }
+.dates-select::-webkit-scrollbar-track {  background-color: #999676;}
+.dates-select::-webkit-scrollbar-track-piece { height: 15px; width: 15px; background-color: #222;}
+.dates-select::-webkit-scrollbar-thumb { height: 3px; background-color: #666; border-radius: 3px;}
+.dates-select::-webkit-scrollbar-corner { background-color: #999;}
+.dates-select::-webkit-resizer { background-color: #fff;}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta http-equiv="Content-Language" content="ru">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Growbox">
+    <title>Growbox</title>
+	<link rel="stylesheet" href="startup.css">
+	<link rel="stylesheet" href="navigation.css">
+	<link rel="stylesheet" href="common.css">
+    <link rel="shortcut icon" sizes="72x72" href="img/favicon.ico" type="image/x-icon">
+  	<script src="jquery.min.js"></script>
+  	<script src="common.js"></script>
+	<script>
+    	$(window).load(set_screen_vh);
+		$(window).resize(set_screen_vh);
+		$(window).on('load resize', set_screen_vh);
+    </script>
+  </head>	
+  <body>
+	<div class="my-body" style="padding: 25px;">
+		<h1 class="header-startup">Smart Growbox</h1>
+		
+		<div class="wrap-login">
+			<span class="login-form-title login-title-text">
+				<b>Unknown user. Try again</b>
+			</span>
+
+			<form class="login-form menu-bodycolor" method="post" action="" enctype="text-plain">
+
+				<div class="wrap-input">
+					<input class="input" type="text" name="username" placeholder="User name" autocomplete="off" required>
+   				</div>
+					
+					<div class="wrap-input">
+					<input class="input" type="password" name="pass" placeholder="Password" autocomplete="off" required>	
+				</div>
+
+				<div class="container-login-form-btn">
+					<button class="ctrl-button login-form-btn ctrl-btn-color ctrl-btn-text">
+						Let's go!
+					</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+  </body>
+</html>

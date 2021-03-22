@@ -1,0 +1,11 @@
+app_data
+gbweb
+*.log
+*.txt
+*.out
+*.db
+*.test
+*.o
+src_v2/tests
+src_v2/bin
+src_v2/obj
