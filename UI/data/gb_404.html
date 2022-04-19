@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta http-equiv="Content-Language" content="ru">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="description" content="Growbox">
+	<title>Growbox-404</title>
+	<link rel="stylesheet" href="404.css">
+	<link rel="stylesheet" href="navigation.css">
+	<link rel="stylesheet" href="common.css">
+	<link rel="shortcut icon" sizes="72x72" href="img/favicon.ico" type="image/x-icon">
+	<script src="jquery.min.js"></script>
+  	<script src="common.js"></script>
+	<script>
+    	$(window).load(set_screen_vh);
+		$(window).resize(set_screen_vh);
+		$(window).on('load resize', set_screen_vh);
+    </script>
+  </head>	
+  <body>  	
+	<div class="container-body">
+		<div class="header404">Sorry, someone ate this page...
+			<div class="img404-wrap"><img class="img404" src="img/kusminog.gif"></div>
+			<div class="container-navigation-btn">
+				<form method="get" action="return_mainmenu" enctype="text-plain">
+					<button class="navigation-btn navigation-btn-text" style="left: -20%;" name="" value="">
+						Main menu
+					</button>
+				</form>
+				<form method="get" action="rfu" enctype="text-plain">
+					<button class="navigation-btn navigation-btn-text" style="left: 20%;" name="" value="">
+						Punish!
+					</button>
+				</form>
+			</div>	
+		</div>
+	</div>
+  </body>
+</html>

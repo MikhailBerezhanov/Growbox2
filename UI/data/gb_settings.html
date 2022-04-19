@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta http-equiv="Content-Language" content="ru">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Growbox">
+    <meta http-equiv="refresh" content="">
+    <title>Growbox</title>
+    <style>
+   		html { overflow:  hidden; }
+  	</style> 
+		<link rel="stylesheet" href="settings.css">
+		<link rel="stylesheet" href="footer.css">
+		<link rel="stylesheet" href="navigation.css">
+		<link rel="stylesheet" href="common.css">
+    <link rel="shortcut icon" sizes="72x72" href="img/favicon.ico" type="image/x-icon">
+    <script src="jquery.min.js"></script>
+    <script src="common.js"></script>
+    <script>
+    	$(window).load(set_screen_vh);
+			$(window).resize(set_screen_vh);
+			$(window).on('load resize', set_screen_vh);
+    	
+    	var xhr;
+    	var refreshTimer;
+
+    	function make_ips_readonly()
+		 	{
+		 		var ip4_id = document.getElementById("ip4"); 
+	 			var ip3_id = document.getElementById("ip3");
+	 			var ip2_id = document.getElementById("ip2");
+	 			var ip1_id = document.getElementById("ip1");
+	 			var gw4_id = document.getElementById("gw4"); 
+	 			var gw3_id = document.getElementById("gw3");
+	 			var gw2_id = document.getElementById("gw2");
+	 			var gw1_id = document.getElementById("gw1");
+
+		 		ip4_id.setAttribute("readonly", "readonly");
+	 			ip3_id.setAttribute("readonly", "readonly");
+	 			ip2_id.setAttribute("readonly", "readonly");
+	 			ip1_id.setAttribute("readonly", "readonly");
+	 			gw4_id.setAttribute("readonly", "readonly");
+	 			gw3_id.setAttribute("readonly", "readonly");
+	 			gw2_id.setAttribute("readonly", "readonly");
+	 			gw1_id.setAttribute("readonly", "readonly");
+
+	 			gw1_id.classList.remove("cell-input-ip");
+	 			gw1_id.classList.add("cell-input-ip-readonly");
+	 			gw2_id.classList.remove("cell-input-ip");
+	 			gw2_id.classList.add("cell-input-ip-readonly");
+	 			gw3_id.classList.remove("cell-input-ip");
+	 			gw3_id.classList.add("cell-input-ip-readonly");
+	 			gw4_id.classList.remove("cell-input-ip");
+	 			gw4_id.classList.add("cell-input-ip-readonly");
+	 			ip1_id.classList.remove("cell-input-ip");
+	 			ip1_id.classList.add("cell-input-ip-readonly");
+	 			ip2_id.classList.remove("cell-input-ip");
+	 			ip2_id.classList.add("cell-input-ip-readonly");
+	 			ip3_id.classList.remove("cell-input-ip");
+	 			ip3_id.classList.add("cell-input-ip-readonly");
+	 			ip4_id.classList.remove("cell-input-ip");
+	 			ip4_id.classList.add("cell-input-ip-readonly");
+		 	}
+
+			function refresh()
+		 	{
+		    xhr = new(XMLHttpRequest);
+
+		    clearTimeout(refreshTimer);
+
+		    // Clear all inputs
+		    document.getElementById('rtc_hour').value = "";
+		    document.getElementById('rtc_min').value = "";
+		    document.getElementById('rtc_sec').value = "";
+		    document.getElementById('rtc_mday').value = "";
+		    document.getElementById('rtc_month').value = "";
+		    document.getElementById('rtc_year').value = "";
+		    document.getElementById('ip4').value = "";
+		    document.getElementById('ip3').value = "";
+		    document.getElementById('ip2').value = "";
+		    document.getElementById('ip1').value = "";
+		    document.getElementById('gw4').value = "";
+		    document.getElementById('gw3').value = "";
+		    document.getElementById('gw2').value = "";
+		    document.getElementById('gw1').value = "";
+		    document.getElementById('cpu_temp').innerHTML = "-- &deg;C";
+		    document.getElementById('app_ver').innerHTML = "-.-";
+		    // Default values
+		    addPlaceholder('ip4', "-");	
+		    addPlaceholder('ip3', "-");
+		    addPlaceholder('ip2', "-");
+		    addPlaceholder('ip1', "-");
+		    addPlaceholder('gw4', "-");	
+		    addPlaceholder('gw3', "-");
+		    addPlaceholder('gw2', "-");
+		    addPlaceholder('gw1', "-");
+		    var t_on = document.getElementById("dhcp_on");
+		    var t_off= document.getElementById("dhcp_off");
+		    var wifi_ap_on = document.getElementById("wifi_ap_on");
+		    var wifi_ap_off= document.getElementById("wifi_ap_off");
+
+		    xhr.open("GET", "current_settings?", true);
+		  	xhr.responseType = "text";
+		  	xhr.onload = function (oEvent) 
+		  	{
+		  		console.log("Response:\n" + xhr.responseText);
+		  		var json = JSON.parse(xhr.responseText);
+
+					// Add placeholders from JSON to all settings fields
+					// LAN
+					addPlaceholder('ip4', json.LAN.ip4);	
+		    	addPlaceholder('ip3', json.LAN.ip3);
+		    	addPlaceholder('ip2', json.LAN.ip2);
+		    	addPlaceholder('ip1', json.LAN.ip1);
+		    	addPlaceholder('gw4', json.LAN.gw4);	
+		    	addPlaceholder('gw3', json.LAN.gw3);
+		    	addPlaceholder('gw2', json.LAN.gw2);
+		    	addPlaceholder('gw1', json.LAN.gw1); 
+		    	if(json.LAN.dhcp){
+		    		t_on.setAttribute("checked", "checked");
+		    		t_on.checked = true;
+		    		t_off.removeAttribute("checked");
+						t_off.checked = false;
+						make_ips_readonly();
+		    	}
+		    	else{
+		    		t_off.setAttribute("checked", "checked");
+						t_off.checked = true;
+						t_on.removeAttribute("checked");
+						t_on.checked = false;
+		    	}
+
+		    	// Wifi
+		    	if(json.WIFI.ap_state){
+		    		wifi_ap_on.setAttribute("checked", "checked");
+		    		wifi_ap_on.checked = true;
+		    		wifi_ap_off.removeAttribute("checked");
+						wifi_ap_off.checked = false;
+						//addPlaceholder('wifi_ap_name', 'Growbox');	
+						document.getElementById('wifi_ap_name').innerHTML = 'Growbox';
+		    		addPlaceholder('wifi_ap_ip4', '10');
+		    		addPlaceholder('wifi_ap_ip3', '10');
+		    		addPlaceholder('wifi_ap_ip2', '0');
+		    		addPlaceholder('wifi_ap_ip1', '1');
+		    	}
+		    	else{
+		    		wifi_ap_off.setAttribute("checked", "checked");
+						wifi_ap_off.checked = true;
+						wifi_ap_on.removeAttribute("checked");
+						wifi_ap_on.checked = false;
+						//addPlaceholder('wifi_ap_name', '-');	
+						document.getElementById('wifi_ap_name').innerHTML = '-';
+		    		addPlaceholder('wifi_ap_ip4', '-');
+		    		addPlaceholder('wifi_ap_ip3', '-');
+		    		addPlaceholder('wifi_ap_ip2', '-');
+		    		addPlaceholder('wifi_ap_ip1', '-');
+		    	}
+
+		    	// RTC
+		    	addPlaceholder('rtc_hour', json.RTC.hour);	
+		    	addPlaceholder('rtc_min', json.RTC.min);
+		    	addPlaceholder('rtc_sec', json.RTC.sec);
+		    	addPlaceholder('rtc_mday', json.RTC.mday);
+		    	addPlaceholder('rtc_month', json.RTC.month);
+		    	addPlaceholder('rtc_year', json.RTC.year);
+
+		    	// ACC
+
+		    	// CPU
+		    	document.getElementById('cpu_temp').innerHTML = json.CPU.temperature + ' &deg;C';
+		    	document.getElementById('app_ver').innerHTML = json.CPU.app_ver;
+		  	}
+		  	xhr.send(null);
+		 	}
+
+		 	function change_dhcp(state)
+		 	{
+		 		//alert(state);
+
+		 		if(state){
+		 			make_ips_readonly();
+		 		}
+		 		else{
+		 			var ip4_id = document.getElementById("ip4"); 
+		 			var ip3_id = document.getElementById("ip3");
+		 			var ip2_id = document.getElementById("ip2");
+		 			var ip1_id = document.getElementById("ip1");
+		 			var gw4_id = document.getElementById("gw4"); 
+		 			var gw3_id = document.getElementById("gw3");
+		 			var gw2_id = document.getElementById("gw2");
+		 			var gw1_id = document.getElementById("gw1");
+
+		 			ip4_id.removeAttribute("readonly");
+		 			ip3_id.removeAttribute("readonly");
+		 			ip2_id.removeAttribute("readonly");
+		 			ip1_id.removeAttribute("readonly");
+		 			gw4_id.removeAttribute("readonly");
+		 			gw3_id.removeAttribute("readonly");
+		 			gw2_id.removeAttribute("readonly");
+		 			gw1_id.removeAttribute("readonly");
+
+		 			gw1_id.classList.add("cell-input-ip");
+		 			gw1_id.classList.remove("cell-input-ip-readonly");
+		 			gw2_id.classList.add("cell-input-ip");
+		 			gw2_id.classList.remove("cell-input-ip-readonly");
+		 			gw3_id.classList.add("cell-input-ip");
+		 			gw3_id.classList.remove("cell-input-ip-readonly");
+		 			gw4_id.classList.add("cell-input-ip");
+		 			gw4_id.classList.remove("cell-input-ip-readonly");
+		 			ip1_id.classList.add("cell-input-ip");
+		 			ip1_id.classList.remove("cell-input-ip-readonly");
+		 			ip2_id.classList.add("cell-input-ip");
+		 			ip2_id.classList.remove("cell-input-ip-readonly");
+		 			ip3_id.classList.add("cell-input-ip");
+		 			ip3_id.classList.remove("cell-input-ip-readonly");
+		 			ip4_id.classList.add("cell-input-ip");
+		 			ip4_id.classList.remove("cell-input-ip-readonly");
+		 		}
+		 	}
+		  
+		 	function open_menu(el, cell, total, expand)
+		 	{
+		  	var k = 0.5;
+		  	var o = document.getElementById(el);
+		  	var cell = document.getElementById(cell);	  	
+		    document.getElementById(el).classList.toggle('open');
+
+		    var h = (o.style.height) ? parseInt(o.style.height) : 1;
+
+		    switch(el)
+		    {
+		    	case "lan_menu":
+		    		document.getElementById("ip_option1").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		//document.getElementById("ip_option2").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("ip_option3").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("ip_option4").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+
+		    		document.getElementById("ip_cellmenu").style["background-size"] = (h==1) ? "0% 0%" : "30% 100%";
+		    		document.getElementById("ip_helper").style.opacity = (h==1) ? 0 : 1;
+
+		    		document.getElementById("ip_leaftop").style.opacity = (h==1) ? 1 : 0;
+		    		document.getElementById("ip_leafbot").style.opacity = (h==1) ? 1 : 0;
+		    		//document.getElementById("ip_leaftop").style["height"] = (h==1) ? 40 : 0 + 'px';
+		    		//document.getElementById("ip_leaftop").style["width"] =  (h==1) ? 60 : 0 + 'px';
+		    		//document.getElementById("ip_leafbot").style["height"] = (h==1) ? 70 : 0 + 'px';
+		    		//document.getElementById("ip_leafbot").style["width"] =  (h==1) ? 100 : 0 + 'px';
+		    		document.getElementById("ip_leaftop").style["z-index"] = (h==1) ? 3 : -1;
+		    		document.getElementById("ip_leafbot").style["z-index"] = (h==1) ? 3 : -1;
+		    		break;
+
+		    	case "wifi_menu":
+		    		document.getElementById("wifi_option1").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("wifi_option2").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("wifi_option3").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+
+		    		document.getElementById("wifi_cellmenu").style["background-size"] = (h==1) ? "0% 0%" : "30% 100%";
+		    		document.getElementById("wifi_helper").style.opacity = (h==1) ? 0 : 1;
+		    		break;
+
+		    	case "rtc_menu":
+		    		document.getElementById("rtc_option1").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("rtc_option2").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		
+		    		document.getElementById("rtc_cellmenu").style["background-size"] = (h==1) ? "0% 0%" : "30% 100%";
+		    		document.getElementById("rtc_helper").style.opacity = (h==1) ? 0 : 1;  		
+		    		break;
+
+		    	case "acc_menu":
+		    		document.getElementById("acc_option1").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("acc_option2").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		//document.getElementById("uart_option3").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		
+		    		document.getElementById("acc_cellmenu").style["background-size"] = (h==1) ? "0% 0%" : "30% 100%";
+		    		document.getElementById("acc_helper").style.opacity = (h==1) ? 0 : 1;
+		    		break;
+
+		    	case "cpu_menu":
+		    		document.getElementById("cpu_option1").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("cpu_option2").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("cpu_option3").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		document.getElementById("cpu_option4").style["height"] = k*document.getElementById(total).offsetHeight + 'px';
+		    		
+		    		document.getElementById("firm_cellmenu").style["background-size"] = (h==1) ? "0% 0%" : "30% 100%";
+		    		document.getElementById("firm_helper").style.opacity = (h==1) ? 0 : 1;
+		    		break;
+		    }
+		       		
+    		o.style.height=((h==1) ? (expand * (cell.offsetHeight) + expand) : 1) + 'px';
+    		
+		  }
+
+		  var lan_btn_Timer;
+		  function send_lan_settings()
+      {
+          xhr = new XMLHttpRequest();
+          xhr.open("POST", "settings/lan", true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          var data;
+          var id;
+          var timer;
+
+          check_value("ip4", 255);
+          check_value("ip3", 255);
+          check_value("ip2", 255);
+          check_value("ip1", 255);
+          check_value("gw4", 255);
+          check_value("gw3", 255);
+          check_value("gw2", 255);
+          check_value("gw1", 255);
+
+          var ip4_value = check_for_input("ip4"); 
+          var ip3_value = check_for_input("ip3");
+          var ip2_value = check_for_input("ip2");
+          var ip1_value = check_for_input("ip1");
+          var gw4_value = check_for_input("gw4"); 
+          var gw3_value = check_for_input("gw3");
+          var gw2_value = check_for_input("gw2");
+          var gw1_value = check_for_input("gw1");
+
+          data = JSON.stringify({ "ip4": ip4_value,
+                                  "ip3": ip3_value,
+                                  "ip2": ip2_value,
+                                  "ip1": ip1_value,
+                                  "gw4": gw4_value,
+                                  "gw3": gw3_value,
+                                  "gw2": gw2_value,
+                                  "gw1": gw1_value, 
+                                	"dhcp": document.getElementById("dhcp_on").checked });
+          id = document.getElementById("lan_btn");
+          timer = lan_btn_Timer;
+
+          xhr.onload = function (oEvent) 
+          {
+              console.log("Response:\n" + xhr.responseText);
+              var json = JSON.parse(xhr.responseText);
+              if (json.result_text == "OK") show_ok(id, timer, "lan", "Set");
+              else show_error(id, timer, "lan", json.result_code, "Set");
+          }
+
+          console.log("Sending request: \n" + data);
+          xhr.send(data); 
+      }
+
+      var wifi_ap_state_btn_Timer;
+		  function send_wifi_ap_state()
+      {
+          xhr = new XMLHttpRequest();
+          var state;
+
+          if (document.getElementById("wifi_ap_on").checked) state = 'on';
+          else state = 'off';
+
+          xhr.open("POST", "settings/wifi_ap_state?" + state, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          var id;
+          var timer;
+
+          id = document.getElementById("wifi_ap_state_btn");
+          timer = wifi_ap_state_btn_Timer;
+
+          xhr.onload = function (oEvent) 
+          {
+              console.log("Response:\n" + xhr.responseText);
+              var json = JSON.parse(xhr.responseText);
+              if (json.result_text == "OK") show_ok(id, timer, "lan", "Set");
+              else show_error(id, timer, "lan", json.result_code, "Set");
+          }
+
+          xhr.send(); 
+          refreshTimer = setTimeout("refresh()", 1000);
+      }
+
+		  var rtc_time_btn_Timer;
+		  var rtc_date_btn_Timer;
+		  function send_rtc_settings(type)
+      {
+          xhr = new XMLHttpRequest();
+          xhr.open("POST", "settings/rtc", true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          var data;
+          var id;
+          var timer;
+
+          if (type == "time"){
+              check_value("rtc_hour", 23);
+              check_value("rtc_min", 59);
+              check_value("rtc_sec", 59);
+
+              var hour_value = check_for_input("rtc_hour"); 
+              var min_value = check_for_input("rtc_min");
+              var sec_value = check_for_input("rtc_sec");
+
+              data = JSON.stringify({ "hour": time_format(hour_value),
+                                      "min": time_format(min_value),
+                                      "sec": time_format(sec_value) });
+              id = document.getElementById("rtc_time_btn");
+              timer = rtc_time_btn_Timer;
+          }
+
+          if (type == "date"){
+              check_value("rtc_mday", 31);
+              check_value("rtc_month", 12);
+              check_value("rtc_year", 9999);
+
+              var mday_value = check_for_input("rtc_mday"); 
+              var month_value = check_for_input("rtc_month");
+              var year_value = check_for_input("rtc_year");
+
+              data = JSON.stringify({ "mday": time_format(mday_value),
+                                      "month": time_format(month_value),
+                                      "year": year_value });
+              id = document.getElementById("rtc_date_btn");
+              timer = rtc_date_btn_Timer;
+          }
+
+          xhr.onload = function (oEvent) 
+          {
+              console.log("Response:\n" + xhr.responseText);
+              var json = JSON.parse(xhr.responseText);
+              if (json.result_text == "OK") show_ok(id, timer, "rtc", "Set");
+              else show_error(id, timer, "rtc", json.result_code, "Set");
+          }
+
+          console.log("Sending request: \n" + data);
+          xhr.send(data); 
+      }
+
+      var reboot_btn_Timer;
+      var pwroff_btn_Timer;
+      var restore_dflt_btn_Timer;
+      function send_cpu_cntl(action)
+      {
+      		xhr = new XMLHttpRequest();
+          xhr.open("POST", "settings/cpu/" + action, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          var id;
+          var timer;
+          var recover_text;
+
+          switch(action){
+          	case "reboot":
+          								id = document.getElementById("reboot_btn");
+          								timer = reboot_btn_Timer;
+          								recover_text = "Reboot";
+          								break;
+
+          	case "poweroff":
+          								id = document.getElementById("pwroff_btn");
+          								timer = pwroff_btn_Timer;
+          								recover_text = "Poweroff";
+          								break;
+
+          	case "restore_settings":
+          								id = document.getElementById("restore_dflt_btn");
+          								timer = restore_dflt_btn_Timer;
+          								recover_text = "Default config";
+          								break;
+          }
+          
+          xhr.onload = function (oEvent) 
+          {
+              console.log("Response:\n" + xhr.responseText);
+              var json = JSON.parse(xhr.responseText);
+              if (json.result_text == "OK") show_ok(id, timer, "cpu", recover_text);
+              else show_error(id, timer, "cpu", json.result_code, recover_text);
+          }
+
+          xhr.send();
+      }
+    </script>
+  </head>
+
+  <body onload="refresh()">
+  	<div class="my-body">
+  		
+  		<div class="header-wrap">
+
+  			<div class="mainmenu-btn">
+          <form method="get" action="return_mainmenu" enctype="text-plain">
+            <div class="container-navigation-btn">
+              <button class="navigation-btn navigation-btn-text" name="" value="">
+                Main menu
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="refresh-btn">
+          <div class="container-navigation-btn">
+            <button class="navigation-btn navigation-btn-text" onclick="refresh()">
+              Refresh
+            </button>
+          </div> 
+        </div>
+
+      </div>
+
+			<div class="header-line header-dull-side-color">
+				<h1 class="header-text">Settings</h1>
+				<div id="header_btn" class="container-header-btn">
+					<button class="header-btn header-bright-side-color" onclick="default()" value="START">
+						<pre class="header-btn-text" style="position: relative; top: -10px;">device</pre>
+					</button>
+				</div>	
+				<img class="settings-header-img" alt="" src="img/set.gif">			
+			</div>
+
+  		<div class="menu-wrap">
+
+  			<div id="ip_cellmenu" class="container-menu" style="background-image: url('img/pot1.gif');">
+
+					<div id="lan_menu" class="menu">
+		    		<div class="title" onclick="open_menu('lan_menu', 'ip_option1', 'ip_cellmenu', 3)"> 
+		    			<img id="ip_leaftop" src="img/leaftop.png" class="menu-btn-img1">
+							<img id="ip_leafbot" src="img/leafbot.png" class="menu-btn-img2">   			
+							<button class="menu-btn cell-title-text">
+								LAN
+							</button>
+						</div>
+						<div id="ip_helper" class ="menu-helper cell-helper-text">
+		    			Local area network settings
+		    		</div>
+
+		    		<ul>
+				      <li>
+							<div id="ip_option1" class="cells-container">
+					   			<span class = "cell-name cell-name-text">IP</span>
+					  			<div class="cell-value">
+						  			<input class="cell-input-ip input-text" id="ip4" type="text" name="ip4" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip input-text" id="ip3" type="text" name="ip3" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip input-text" id="ip2" type="text" name="ip2" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip input-text" id="ip1" type="text" name="ip1" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+				  				</div>
+					   		</div>
+				      </li>
+
+				      <hr class="horizontal-divider" style="width: 97%;" color="#000000">
+				      <li>
+				      	<div id="ip_option3" class="cells-container">
+						  		<div class = "cell-name cell-name-text"><span>Gateway</span></div>
+						  		<div class="cell-value" >
+						  			<input class="cell-input-ip left-content input-text" id="gw4" type="text" name="gw4" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip input-text" id="gw3" type="text" name="gw3" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip input-text" id="gw2" type="text" name="gw2" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip input-text" id="gw1" type="text" name="gw1" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" onkeypress='validate_int(event)'>
+					  			</div>
+						  	</div>
+				      </li>
+				      <hr class="horizontal-divider" style="width: 97%;" color="#000000">
+				      <li>
+				      	<div id="ip_option4" class="cells-container">
+						  		<div class = "cell-name cell-name-text"><span>DHCP</span><span class="toggle-off">Off</span><span class="toggle-on">On</span></div>
+						  		<div>
+										<div class="toggle-bg">
+										    <input id="dhcp_off" type="radio" name="dhcp" value="off" onchange="change_dhcp(0)">
+										    <input id="dhcp_on" type="radio" name="dhcp" value="on" onchange="change_dhcp(1)"> 
+										    <span class="switch"></span>
+										</div>
+
+						  			<div class="container-cell-btn">
+											<button id="lan_btn" class="ctrl-button cell-btn-lan ctrl-btn-color ctrl-btn-text" onclick = "send_lan_settings()">
+												Set
+											</button>
+										</div>				
+					  			</div>
+						  	</div>
+				      </li>
+				    </ul>
+		  		</div>
+		  	</div>
+
+	  		<div id="wifi_cellmenu" class="container-menu" style="background-image: url('img/pot2.gif');">
+					<div id="wifi_menu" class="menu">
+
+						<div class="title" onclick="open_menu('wifi_menu', 'wifi_option1', 'wifi_cellmenu', 3)">
+							<button class="menu-btn cell-title-text">
+								WiFi
+							</button>
+						</div>
+						<div id="wifi_helper" class ="menu-helper cell-helper-text">
+		    			Wireless network settings
+		    		</div>	
+		    		<ul>
+		    			<li>
+			      	<div id="wifi_option1" class="cells-container">
+					  		<div class = "cell-name cell-name-text"><span>AP<br>name</span><pre id="wifi_ap_name" class="fversion cell-label-text">123</pre></div>
+					  			<div class="cell-value-wifi">
+					  				<!--
+						  			<input class="cell-input-wifi" id="wifi_ap_name" type="text" placeholder="-" autocomplete="off" max="1000000" min="0" maxlength="7" readonly>
+						  			
+						  			<div class="container-cell-btn">
+											<button class="cell-btn-wifi ctrl-button ctrl-btn-color">
+												Set
+											</button>
+										</div>
+										-->
+					  			</div>
+					  		</div>
+			      	</li>
+			      	<hr class="horizontal-divider" color="#000000" style="width: 97%;">
+			      	<li>
+			      		<div id="wifi_option2" class="cells-container">
+					  			<div class = "cell-name cell-name-text"><span>AP<br>address</span></div>
+					  			<div class="cell-value" >
+						  			<input class="cell-input-ip-readonly left-content input-text" id="wifi_ap_ip4" type="text" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" readonly onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip-readonly input-text" id="wifi_ap_ip3" type="text" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" readonly onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip-readonly input-text" id="wifi_ap_ip2" type="text" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" readonly onkeypress='validate_int(event)'>
+						  			<input class="cell-input-ip-readonly input-text" id="wifi_ap_ip1" type="text" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3" readonly onkeypress='validate_int(event)'>
+					  			</div>
+					  			<!--
+					  			<div class="container-cell-btn">
+										<button class="cell-btn-wifi ctrl-button ctrl-btn-color">
+											Set
+										</button>
+									</div>
+									-->
+					  		</div>
+			      	</li>
+			      	<hr class="horizontal-divider" style="width: 97%;" color="#000000">
+				      <li>
+				      	<div id="wifi_option3" class="cells-container">
+						  		<div class = "cell-name cell-name-text"><span>AP<br>state</span><span class="toggle-off">Off</span><span class="toggle-on">On</span></div>
+						  		<div>
+										<div class="toggle-bg">
+										    <input id="wifi_ap_off" type="radio" name="wifi" value="off" > <!--onchange="change_wifi_ap_state(0)"-->
+										    <input id="wifi_ap_on" type="radio" name="wifi" value="on" >  <!--onchange="change_wifi_ap_state(1)"-->
+										    <span class="switch"></span>
+										</div>
+						  			<div class="container-cell-btn">
+											<button id="wifi_ap_state_btn" class="cell-btn-lan ctrl-button ctrl-btn-color ctrl-btn-text" onclick = "send_wifi_ap_state()">
+												Set
+											</button>
+										</div>				
+					  			</div>
+						  	</div>
+				      </li>
+			    	</ul>
+	  			</div>
+	  		</div>
+
+  			<div id="rtc_cellmenu" class="container-menu" style="background-image: url('img/pot3.gif');">
+					<div id="rtc_menu" class="menu">
+
+						<div class="title" onclick="open_menu('rtc_menu', 'rtc_option1', 'rtc_cellmenu', 2)">
+							<button class="menu-btn cell-title-text">
+								RTC
+							</button>
+						</div>
+		    		<div id="rtc_helper" class ="menu-helper cell-helper-text">
+		    			Time and date settings
+		    		</div>
+
+		    		<ul>
+		    			<li>
+				      	<div id="rtc_option1" class="cells-container">
+						  		<div class = "cell-name cell-name-text"><span>Time</span></div>
+					  			<div class="cell-value-rtc" >
+						  			<input class="cell-input-rtc input-text" id="rtc_hour" type="text" name="time" placeholder="-" autocomplete="off" max="23" min="0" maxlength="2" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-rtc input-text" id="rtc_min" type="text" name="time" placeholder="-" autocomplete="off" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-rtc input-text" id="rtc_sec" type="text" name="time" placeholder="-" autocomplete="off" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+						  			<div class="container-cell-btn">
+											<button id="rtc_time_btn" class="ctrl-button cell-btn-rtc ctrl-btn-color ctrl-btn-text" onclick = "send_rtc_settings('time')">
+												Set
+											</button>
+										</div>
+					  			</div>
+					  		</div>
+			      	</li>
+			      	<hr class="horizontal-divider" color="#000000">
+			      	<li>
+				      	<div id="rtc_option2" class="cells-container">
+						  		<div class = "cell-name cell-name-text"><span>Date</span></div>
+						  		<div class="cell-value-rtc">
+						  			<input class="cell-input-rtc input-text" id="rtc_mday" type="text" name="time" placeholder="-" autocomplete="off" max="31" min="0" maxlength="2" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-rtc input-text" id="rtc_month" type="text" name="time" placeholder="-" autocomplete="off" max="12" min="1" maxlength="2" onkeypress='validate_int(event)'>
+						  			<input class="cell-input-rtc input-text" id="rtc_year" type="text" name="time" placeholder="-" autocomplete="off" max="3000" min="1900" maxlength="4" onkeypress='validate_int(event)'>
+						  			<div class="container-cell-btn">
+											<button id="rtc_date_btn" class="cell-btn-rtc ctrl-button ctrl-btn-color ctrl-btn-text" onclick = "send_rtc_settings('date')">
+												Set
+											</button>
+										</div>
+					  			</div>
+					  		</div>
+			      	</li>
+			    	</ul>
+	  			</div>
+	  		</div>
+
+		  	<div id="acc_cellmenu" class="container-menu" style="background-image: url('img/pot4.gif');">
+		  		<div id="acc_menu" class="menu">
+
+						<div class="title" onclick="open_menu('acc_menu', 'acc_option1', 'acc_cellmenu', 2)">
+							<button class="menu-btn cell-title-text">
+								ACC
+							</button>
+						</div>
+						<div id="acc_helper" class ="menu-helper cell-helper-text">
+		    			Users' account settings
+		    		</div>
+		    		
+		    		<ul>
+		    			<li>
+			      	<div id="acc_option1" class="cells-container">
+					  		<div class = "cell-name cell-name-text"><span>Login</span></div>
+					  			<form class="cell-value-acc" method="get" action="uart_baud" enctype="text-plain">
+						  			<input class="cell-input-acc input-text" id="login" type="text" name="baud" placeholder="-" autocomplete="off" max="1000000" min="0" maxlength="7">
+						  			<div class="container-cell-btn">
+											<button class="cell-btn-acc ctrl-button ctrl-btn-color ctrl-btn-text">
+												Set
+											</button>
+										</div>
+					  			</form>
+					  		</div>
+			      	</li>
+			      	<hr class="horizontal-divider" color="#000000">
+			      	<li>
+			      	<div id="acc_option2" class="cells-container">
+					  		<div class = "cell-name cell-name-text"><span>Pass</span></div>
+					  		<form class="cell-value-acc" method="get" action="can_addr" enctype="text-plain">
+						  			<input class="cell-input-acc input-text" id="passw" type="text" name="addr" placeholder="-" autocomplete="off" max="255" min="0" maxlength="3">
+						  			<div class="container-cell-btn">
+											<button class="cell-btn-acc ctrl-button ctrl-btn-color ctrl-btn-text">
+												Set
+											</button>
+										</div>
+					  			</form>
+					  		</div>
+			      	</li>
+
+			    	</ul>
+	  			</div>
+	  		</div>
+		  	
+		  	<div id="firm_cellmenu" class="container-menu" style="background-image: url('img/pot5.gif');">
+		  		<div id="cpu_menu" class="menu">
+
+						<div class="title" onclick="open_menu('cpu_menu', 'cpu_option1', 'firm_cellmenu', 4)">
+							<button class="menu-btn cell-title-text">
+								CPU
+							</button>
+						</div>
+						<div id="firm_helper" class ="menu-helper cell-helper-text">
+		    			Processor information
+		    		</div>
+		    		
+		    		<ul>
+		    			<li>
+			      	<div id="cpu_option1" class="cells-container">
+					  		<div class = "cell-name cell-name-text" ><span>Temp</span><pre id="cpu_temp" class="fversion cell-label-text">-- &deg;C</pre></div>
+					  	</div>
+			      	</li>
+			      	<hr class="horizontal-divider" color="#000000" style="width: 97%;">
+		    			<li>
+			      	<div id="cpu_option2" class="cells-container">
+					  		<div class = "cell-name cell-name-text"><span>App<br>version</span> <pre id="app_ver" class="fversion cell-label-text">--.--</pre> </div>
+					  	</div>
+			      	</li>
+			      	<hr class="horizontal-divider" color="#000000" style="width: 97%;">
+			      	<li>
+			      	<div id="cpu_option3" class="cells-container">
+					  		<div class = "cell-name cell-name-text"><span>App<br>update</span></div>
+						  		<form class="cell-frmw-file" method="post" action="app_update" enctype="multipart/form-data" style="background-image: url('img/folder.png');">
+						  			<input class="cell-input-frmw" id="frmw_file" type="file" name="f" placeholder="-" autocomplete="off" >
+						  			<label for="frmw_file" class="frmw_file_label cell-label-text" >Choose firmware file</label>			  			
+						  			<div class="container-cell-btn">
+											<button type="submit" class="ctrl-button cell-btn-frmw ctrl-btn-color ctrl-btn-text">
+												Flash
+											</button>
+										</div>
+					  			</form>	
+					  		</div>
+			      	</li>
+			      	<hr class="horizontal-divider" color="#000000" style="width: 97%;">
+			      	<li>
+				      	<div id="cpu_option4" class="cells-container">
+						  		<div class = "cell-name cell-name-text" ><span>Control</span></div>
+						  		<div class="container-cell-btn">
+											<button id="reboot_btn" class="cell-btn-cpu-cntl ctrl-button ctrl-btn-color ctrl-btn-text" style="left: 23%;" onclick="send_cpu_cntl('reboot')">
+												Reboot
+											</button>
+									</div>
+									<div class="container-cell-btn">
+											<button id="pwroff_btn" class="cell-btn-cpu-cntl ctrl-button ctrl-btn-color ctrl-btn-text" style="left: 61.5%;" onclick="send_cpu_cntl('poweroff')">
+												Poweroff
+											</button>
+									</div>
+									<div class="container-cell-btn">
+											<button id="restore_dflt_btn" class="cell-btn-cpu-cntl ctrl-button ctrl-btn-color ctrl-btn-text" style="left: 100%;" onclick="send_cpu_cntl('restore_settings')">
+												Restore<br>default
+											</button>
+									</div>
+						  	</div>
+			      	</li>
+			    	</ul>
+	  			</div>
+	  		</div>
+	  	</div>
+	  
+		  <div id="footer" class="footer-text">.
+				<div class="container-footer">
+					<div id="footer-img" style="background-image: url('img/trees.gif');"> </div>
+				</div>
+			</div>
+
+		</div>
+  </body>
+</html>

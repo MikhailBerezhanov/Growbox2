@@ -1,0 +1,808 @@
+
+.settings-header-img{
+  position: absolute;
+  width: 130px; 
+  height: 100px;
+  margin-left: 178%;
+  margin-top: -12%;
+  z-index: 1;
+}
+
+/*----------------------------------------------------
+[Menus] */
+
+.container-menu{
+  display: flex;
+  flex-basis: content;
+  flex-direction: row;
+  justify-content: flex-start;
+  
+  position: relative;
+  margin: auto;
+  margin-top: 10px;
+  flex:  0 3 15%;
+  min-width: 900px;
+  width: 70%;
+  max-width: 900px;
+  
+  z-index: 1;
+  border-radius: 10px;
+  background-color: var(--mainmenu-btn-color); /*rgba(85, 85, 85, 0.55);*/
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+
+  background-repeat: no-repeat;
+  background-position: 90% 0;
+  background-size: 30% 100%;
+}
+
+.menu ul {
+  position: absolute;
+  width: 80%;
+  height: 100%;
+  top: 0;
+  left:0;
+
+  visibility: hidden;
+  opacity: 0;
+}
+
+.menu .title {
+  font-family: Verdana, Geneva, sans-serif; 
+  color: #ffffff;
+  font-size: 24pt;
+  color: white;
+  cursor: pointer;
+}
+
+.menu.open ul {
+  display: block;
+  top: 0;
+  margin-left:20%;
+
+  -webkit-transition: all 0.8s;
+  -o-transition: all 0.8s;
+  -moz-transition: all 0.8s;
+  transition: all 0.8s;
+
+  visibility: visible;
+  opacity: 1;
+}
+
+.menu-btn{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 21%;
+  left: 0;
+  height: 100%;
+  border-radius: 10px 0px 0px 10px;
+  background-color: var(--cell-title-color);
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.menu-btn::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px 0px 0px 10px;
+  background-color: var(--ctrl_btn-select-color);/*#61ac27;*/
+  top: 0;
+  left: 0;
+  opacity: 0;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.menu-btn:hover {
+  background-color: transparent;
+}
+
+.menu-btn:hover:before {
+  opacity: 1;
+}
+
+.menu-btn-img1{
+  position: absolute;
+  width: 75px;
+  height: 40px;
+  top: -11px;
+
+  z-index: -1;
+  opacity: 0;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.menu-btn-img2{
+  position: absolute;
+  width: 100px;
+  height: 85px;
+  bottom: -10%;
+  left: -10px;
+
+  z-index: -1;
+  opacity: 0;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.menu-helper{
+  position: absolute;
+  top: 38%;
+  left: 30%;
+
+  -webkit-transition: all 0.8s;
+  -o-transition: all 0.8s;
+  -moz-transition: all 0.8s;
+  transition: all 0.8s;
+
+  opacity: 1;
+}
+
+/*-------------------------------------------------------
+[ SETTINGS TABLE CELLS ] */
+.cells-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  
+  position: relative;
+  flex:  3 3 60%;
+  width: 80%;
+  height: 80px;
+  top: 0;
+
+  z-index: 1;
+
+  border-radius: 0px 10px 10px 0px;
+  background-color: rgba(85, 85, 85, 0);
+}
+
+.cell-name{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+
+  display: flex;
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  z-index: 1;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, var(--mainmenu-btn-color) 10%, black, black, black, black 50%, black, black, black, var(--mainmenu-btn-color) 90%) 1 100%;
+}
+
+.cell-value{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  left: 20%;
+  width: 100%;
+  height: 100%;
+}
+
+.container-cell-btn {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/*------------------------------------------------------
+[ IP Settings } */
+
+.cell-input-ip{
+  text-align: center;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, hsla(0, 0%, 16%, 1) 10%, black, black, black, black 50%, black, black, black, hsla(0, 0%, 16%, 1) 90%) 1 100%;
+
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 20%;
+  max-width: 100%;
+  height: 100%;
+  background: transparent;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-input-ip:focus {
+  padding-right: 6%;
+  min-width: 25%;
+}
+
+.cell-input-ip::placeholder{
+  font-family: var(--placeholder-font-family);
+  color: var(--placeholder-text-color);
+  font-size: var(--placeholder-font-size);
+}
+
+.cell-input-ip-readonly{
+  text-align: center;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, hsla(0, 0%, 16%, 1) 10%, black, black, black, black 50%, black, black, black, hsla(0, 0%, 16%, 1) 90%) 1 100%;
+
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 20%;
+  max-width: 100%;
+  height: 100%;
+  background: transparent;
+  /*
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;*/
+}
+
+.horizontal-divider{
+  width: 80%;
+}
+
+.cell-btn-ip {
+  min-width: 23.5%;
+  left: 80%;
+  top: 10%;
+  height: 80%;
+
+  position: absolute;
+  z-index: 2;
+}
+
+/*------------------------------------------------------
+[ DHCP Toggle switch } */
+
+.toggle-bg{
+  background: var(--switch-bg-color); /* Вам понадобится видеть область с тумблером, но не стесняйтесь изменить цвет */
+  display: block; /* ...Чтобы можно было установить высоту и ширину */
+  /*float: left;  ...Чтобы он не занимал всю ширину страницы */
+  height: 50%; /* Если хотите, можно это попозже изменить */
+  position: absolute; /* Требуется, чтобы тумблер мог передвигаться */
+  width: 20%; /* Это тоже можно позже изменить */
+  left: 50%;
+  top: 25%;
+  border-radius: 10px;
+}
+
+.toggle-bg input{
+  cursor: pointer;
+  height: 28px;
+  left: 0;
+  margin: 0; /* Сбросьте поля и отступ */
+  opacity: 0; /* Невидим! */
+  padding: 0;
+  position: absolute;
+  top: -10px; /* Сдвиньте по вертикали */
+  width: 100%;
+  z-index: 2; /* Нам нужно, чтобы вход input находился сверху span.switch, которому мы назначим z-index в 1 */
+}
+
+.toggle-off{
+  font-family: Verdana, Geneva, sans-serif;
+  color: var(--placeholder-text-color);
+
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  position: absolute;
+  left: 200%;
+}
+
+.toggle-on{
+  font-family: Verdana, Geneva, sans-serif;
+  color: var(--placeholder-text-color);
+  font-weight: bold;
+  position: absolute;
+  left: 370%;
+}
+
+.switch{
+  background: var(--switch-color);
+  display: block;
+  float: left;
+  border-radius: 10px;
+  height: 120%;
+  left: -1%; /* Это – начальная точка. При добавлении border radius немного виден фон, если использовать left: 0;, поэтому лучше всего применить -1px.*/
+  position: absolute;
+  top: -10%; /* ...Чтобы отцентрировать его по вертикали */
+  width: 20%;
+  z-index: 1; /* Помните, он должен быть под невидимыми input-ами */
+  
+  -webkit-transition: left .2s ease;
+  -o-transition: left .2s ease;
+  -moz-transition: left .2s ease;
+  transition: left .2s ease;
+
+}
+
+.toggle-bg input:checked~.switch{ left: -3%; } /* Исходная позиция тумблера */
+.toggle-bg input~:checked~.switch{ left: 82%; } /*окончательная относительная позиция переключателя */
+.toggle-bg input:checked{ z-index: 0; }
+
+.cell-btn-lan {
+  min-width: 23.5%;
+  left: 100%;
+  top: 10%;
+  height: 80%;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 2;
+}
+
+.cell-btn-lan-ok {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+  color: var(--ctrl_btn-text-color);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  min-width: 19.5%;
+  left: 102%;
+  top: 18%;
+  height: 62%;
+  border-radius: 6px;
+
+  background-color:  var(--ok_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-btn-lan-error {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+  color: var(--ctrl_btn-text-color);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  min-width: 23.5%;
+  left: 100%;
+  top: 20%;
+  height: 60%;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+
+  background-color:  var(--err_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/*------------------------------------------------------
+[ WiFi Settings } */
+.cell-value-wifi{
+  display: flex;
+  position: absolute;
+  left: 20%;
+  width: 100%;
+  height: 100%;
+}
+
+.cell-input-wifi{
+  text-align: center;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, hsla(0, 0%, 16%, 1) 10%, black, black, black, black 50%, black, black, black, hsla(0, 0%, 16%, 1) 90%) 1 100%;
+
+  display: flex;
+  width: 410%;
+  height: 100%;
+  background: transparent;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-input-wifi:focus {
+  /*padding-right: 20%;*/
+}
+
+.cell-input-wifi::placeholder{
+  font-family: var(--placeholder-font-family);
+  color: var(--placeholder-text-color);
+  font-size: var(--placeholder-font-size);
+}
+
+.cell-btn-wifi {
+  min-width: 23.5%;
+  left: 80%;
+  top: 10%;
+  height: 80%;
+
+  position: absolute;
+  z-index: 1;
+}
+
+/*------------------------------------------------------
+[ RTC Settings } */
+
+.cell-value-rtc{
+  display: flex;
+  position: absolute;
+  left: 20%;
+  width: 100%;
+  height: 100%;
+}
+
+.cell-input-rtc{
+  text-align: center;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, hsla(0, 0%, 16%, 1) 10%, black, black, black, black 50%, black, black, black, hsla(0, 0%, 16%, 1) 90%) 1 100%;
+
+  display: flex;
+  min-width: 26.5%;
+  max-width: 150%;
+  height: 100%;
+  background: transparent;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-input-rtc:focus {
+  padding-right: 8%;
+  min-width: 30%;
+}
+
+.cell-input-rtc::placeholder{
+  font-family: var(--placeholder-font-family);
+  color: var(--placeholder-text-color);
+  font-size: var(--placeholder-font-size);
+}
+
+.cell-btn-rtc {
+  min-width: 23.5%;
+  left: 80%;
+  top: 10%;
+  height: 80%;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.cell-btn-rtc-ok {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+  color: var(--ctrl_btn-text-color);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  min-width: 19.5%;
+  left: 82%;
+  top: 18%;
+  height: 62%;
+  border-radius: 6px;
+
+  background-color:  var(--ok_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-btn-rtc-error {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+  color: var(--ctrl_btn-text-color);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  min-width: 23.5%;
+  left: 80%;
+  top: 20%;
+  height: 60%;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+
+  background-color:  var(--err_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/*----------------------------------------------
+[ ACC Settings } */
+.cell-value-acc{
+  display: flex;
+  position: absolute;
+  left: 20%;
+  width: 100%;
+  height: 100%;
+}
+
+.cell-input-acc{
+  text-align: center;
+
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to top, hsla(0, 0%, 16%, 1) 10%, black, black, black, black 50%, black, black, black, hsla(0, 0%, 16%, 1) 90%) 1 100%;
+
+  display: flex;
+  width: 410%;
+  height: 100%;
+  background: transparent;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-input-acc:focus {
+  padding-right: 20%;
+}
+
+.cell-input-acc::placeholder{
+  font-family: var(--placeholder-font-family);
+  color: var(--placeholder-text-color);
+  font-size: var(--placeholder-font-size);
+}
+
+.cell-btn-acc {
+  min-width: 23.5%;
+  left: 80%;
+  top: 10%;
+  height: 80%;
+
+  position: absolute;
+  z-index: 1;
+}
+
+/*----------------------------------------------
+[ CPU ] */
+
+.fversion{
+  font-family: Verdana, Geneva, monospace;
+  color: #999999;
+  line-height: 1.2;
+
+  left: 297%;
+  position: absolute;
+}
+
+.frmw_file_label{
+  font-family: Verdana, Geneva, monospace;
+  color: #999999;
+  line-height: 1.2;
+
+  position: absolute;
+}
+
+.frmw_file_label:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cell-frmw-file{
+  font-family: Verdana, Geneva, monospace;
+  color: #999999;
+  line-height: 1.2;
+
+  left: 20%;
+  position: absolute;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 80%;
+  height: 100%;
+  /*outline: 2px dashed #5d5d5d;
+  outline-offset: -12px;*/
+  background-color: rgba(25,25,25,0.1);
+  
+  background-repeat: no-repeat;
+  background-position: 80%;
+  background-size: 6% 55%;
+}
+
+.cell-frmw-file input[type=file] {
+   width: 0.1px;
+   height: 0.1px;
+   opacity: 0;
+   position: absolute;
+   z-index: -10;
+}
+
+.cell-btn-frmw{
+  min-width: 29%;
+  height: 80%;
+  left: 100%;
+  top: 10%;
+  position: absolute;
+
+  z-index: 1;
+}
+
+
+.cell-btn-cpu-cntl{
+  min-width: 23%;
+  height: 70%;
+  left: 100%;
+  top: 10%;
+  position: absolute;
+
+  z-index: 1;
+}
+
+.cell-btn-cpu-ok {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+  color: var(--ctrl_btn-text-color);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  min-width: 23.5%;
+  left: 80%;
+  top: 15%;
+  height: 60%;
+  border-radius: 6px;
+
+  background-color:  var(--ok_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.cell-btn-cpu-error {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+  color: var(--ctrl_btn-text-color);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  min-width: 23.5%;
+  left: 80%;
+  top: 25%;
+  height: 50%;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 2;
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+
+  background-color:  var(--err_btn-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}

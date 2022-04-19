@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta http-equiv="Content-Language" content="ru">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="refresh" content="">
+    <meta name="description" content="Growbox">   
+		<title>Growbox</title>
+		<link rel="stylesheet" href="mainmenu.css">
+		<link rel="stylesheet" href="navigation.css">
+		<link rel="stylesheet" href="footer.css">
+		<link rel="stylesheet" href="common.css">
+    <link rel="shortcut icon" sizes="72x72" href="img/favicon.ico" type="image/x-icon">
+    <script src="jquery.min.js"></script>
+    <script src="common.js"></script>
+    <script>
+	  	var xhr;
+	  	var idTimer1;
+
+      // Выполнение скрипта при загрузке страницы и при изменении ширины окна
+			$(window).load(set_screen_vh);
+			$(window).resize(set_screen_vh);
+			$(window).on('load resize', set_screen_vh);
+
+	  	function check_and_set(resp)
+	  	{
+	  		if(resp.water == "") resp.water = '-';
+	  		//else if (resp.water == "OK") {
+	  		//	document.getElementById('water_status').classList.remove('red-color');
+	  		//	document.getElementById('water_status').classList.add('green-color');
+	  		//}
+	  		//else{ 
+	  		//	document.getElementById('water_status').classList.remove('green-color');
+	  		//	document.getElementById('water_status').classList.add('red-color');
+	  		//}
+	  		if(resp.temperature == "") resp.temperature = '-';
+	  		else{
+	  			var temp_val = parseFloat(resp.temperature);
+	  			if(temp_val > 27.00) document.getElementById('temp_value').classList.add('red-color');
+	  			else if(temp_val < 20.00) document.getElementById('temp_value').classList.add('blue-color');
+	  			else document.getElementById('temp_value').classList.add('green-color');
+	  		}
+	  		if(resp.humidity == "") resp.humidity = '-';
+	  		if(resp.light == "") resp.light = '-';
+	  		else if(resp.light == "On") document.getElementById('light_state').classList.add('green-color');
+	  		if(resp.wind_in == "") resp.wind_in = '-';
+	  		if(resp.wind_out == "") resp.wind_out = '-';
+
+	  		document.getElementById('water_status').innerHTML = resp.water;
+	  		document.getElementById('temp_value').innerHTML = resp.temperature;
+				document.getElementById('hum_value').innerHTML = resp.humidity;
+				document.getElementById('light_state').innerHTML = resp.light;
+				document.getElementById('wind_in_value').innerHTML = resp.wind_in;
+				document.getElementById('wind_out_value').innerHTML = resp.wind_out;
+	  	}
+
+			function onload()
+			{
+				xhr = new(XMLHttpRequest);
+				xhr.open("GET", "content?r=", true);
+				xhr.responseType = "text";
+
+				xhr.onload = function (oEvent) 
+				{
+					console.log("Response:\n" + xhr.responseText);
+					var json = JSON.parse(xhr.responseText);
+					check_and_set(json);   	
+				}
+
+				xhr.send(null);
+			}
+
+			function Timer1()
+			{
+		  	xhr.open("GET", "content?r=" + Math.random(), true); //Math.random() - защита от кеширования
+		  	xhr.responseType = "text";
+
+		  	xhr.onload = function (oEvent) 
+		  	{
+		  		console.log("Response:\n" + xhr.responseText);
+		  		var json = JSON.parse(xhr.responseText);
+		  		check_and_set(json);   	
+		  	}
+
+		  	xhr.send(null);
+
+		  	idTimer1 = setTimeout("Timer1()", 1000);
+			}
+
+			function startstatus()
+			{
+				document.getElementById('butcontent').innerHTML = "<button class='btn-content' autofocus style=\"background-image: url('img/alive.png');\" onclick='stopstatus()' value='STOP'><pre></pre></button>";
+				Timer1();
+			}
+			
+			function stopstatus()
+			{
+			  document.getElementById('butcontent').innerHTML = "<button class='btn-content' autofocus style=\"background-image: url('img/unalive.png')\" onclick='startstatus()' value='START'><pre></pre></button>";
+			  clearTimeout(idTimer1);
+			  document.getElementById('water_status').innerHTML = "-";
+			  document.getElementById('temp_value').innerHTML = "-";
+			  document.getElementById('hum_value').innerHTML = "-";
+			  document.getElementById('light_state').innerHTML = "-";
+			  document.getElementById('wind_in_value').innerHTML = "-";
+			  document.getElementById('wind_out_value').innerHTML = "-";
+			}
+		</script>
+  </head>	
+  <body onload="onload()">
+
+  	<div class="my-body">
+
+  		<div class="header-wrap">
+
+  			<div class="mainmenu-btn">
+          <form method="get" action="return_mainmenu" enctype="text-plain">
+            <div class="container-navigation-btn">
+              <button class="navigation-btn navigation-btn-text" name="" value="">
+                Exit
+              </button>
+            </div>
+          </form>
+        </div>
+
+  			<div class="refresh-btn">
+          <div class="container-navigation-btn">
+            <button class="navigation-btn navigation-btn-text" style="background-image: url('img/unalive.png');
+  background-repeat: no-repeat;
+  background-position: center; 
+  background-size: 30%;" onclick="update()">
+	             
+	          </button>
+	        </div> 
+	    	</div>
+
+	    </div>
+
+    	<div class="header-line header-bright-side-color">
+				<h1 class="header-text">Welcome</h1>
+				<div id="header_btn" class="container-header-btn">
+					<div class="btn-home header-dull-side-color" >	
+					<!--
+					<hr style="position: absolute; width:100%;" color="#34ab30" size="5px">
+					<iframe style="margin-bottom: 15px;" width="100%" height="75" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/415231950&color=%2334ab30&auto_play=false&hide_related=false&show_comments=false&sharing=false&show_artwork=false&show_user=false&show_reposts=false&show_teaser=false&visual=true"></iframe>
+					<hr style="position: absolute; left: 0; bottom: -7px; width:45%; border-radius: 0px" 
+					color="#050505" size="20px">
+					-->
+					<pre class="header-btn-text"> </pre>
+					</div>
+				</div>	
+
+				<img class="mainmenu-header-img" alt="" src="img/fern.png">
+				<pre class="header-ui-ver ui-ver-text">Growbox UI ver. 1.01</pre>		
+
+				<!--
+				<div id="butcontent" class="container-btn-content">
+					<button class="btn-content" autofocus onclick="startstatus()" value="START">
+						<pre></pre>
+					</button>
+				</div>
+				-->
+			</div>
+      
+
+			<div class="container-buttons">	
+
+				<form method="get" action="/settings">
+					<div class="container-settings">
+						<button id="myblock6" class="settings-btn mainmenu-btns-style" style="background-image: url('img/settings.gif');">
+							<b class="mainmenu-btn-text">Settings</b>
+						</button>
+					</div>	
+				</form>
+
+				<form method="get" action="/rfu">
+					<div class="container-templ-btn">
+						<button id="myblock1" class="templ-btn mainmenu-btns-style" style="background-image: url('img/game.gif');">
+							<b class="mainmenu-btn-text">Button</b>
+						</button>
+					</div>	
+				</form>
+
+				<form  method="get" action="/template">
+					<div class="container-water" >
+						<button id="myblock2" class="water-btn mainmenu-btns-style" style="background-image: url('img/water.gif');">
+							<span class="water-name-pos"><b class="mainmenu-btn-text">Water</b></span> 
+							<pre id="water_status" class="water_status-val state-val-text">-</pre><pre class="water_status-sign"> </pre>
+						</button>
+					</div>	
+				</form>
+
+				<form method="get" action="/climate_status">
+					<div class="container-climate">
+						<button id="myblock3" class="climate-btn mainmenu-btns-style" style="background-image: url('img/plant.gif');">
+							<span class="climate-name-pos"><b class="mainmenu-btn-text"></b></span> 
+							<div><pre id="temp_value" class="temp_value-val main-state-val-text">-</pre><pre class="temp_value-sign main-state-val-text" style="color: var(--mainmenu-btn-text-color);"> &deg;C  </pre></div>
+							<pre id="hum_value" class="hum_value-val sub-state-val-text">-</pre><pre class="hum_value-sign"></pre>
+						</button>
+					</div>	
+				</form>
+
+				<form method="get" action="/light_settings">
+					<div class="container-light-btn">
+						<button id="myblock4" class="light-btn mainmenu-btns-style" style="background-image: url('img/led.gif');">
+							<span class="light-name-pos"><b class="mainmenu-btn-text">Light</b></span> 
+							<pre id="light_state" class="light_state-val state-val-text">-</pre><pre class="light_state-sign"></pre>
+						</button>
+					</div>	
+				</form>
+
+				<form method="get" action="/coolers_status">
+					<div class="container-wind">
+						<button id="myblock5" class="wind-btn mainmenu-btns-style" style="background-image: url('img/wind.gif');">
+							<span class="wind-name-pos"><b class="mainmenu-btn-text">Wind</b></span> 
+							<pre id="wind_in_value" class="wind_in-val state-val-text">-</pre><pre class="wind_in-sign state-val-text"></pre>
+							<pre id="wind_out_value" class="wind_out-val state-val-text">-</pre><pre class="wind_out-sign state-val-text"></pre>
+						</button>
+					</div>	
+				</form>
+
+			</div>
+
+			<!--
+      <audio id="myaudio1" preload="auto">
+        <source src="audio/Sound_1.ogg" type="audio/ogg">
+        
+      </audio>
+      <audio id="myaudio2" preload="auto">
+        <source src="audio/Sound_2.ogg" type="audio/ogg">
+        
+      </audio>
+      <audio id="myaudio3" preload="auto">
+        <source src="audio/Sound_3.ogg" type="audio/ogg">
+        
+      </audio>
+      <audio id="myaudio4" preload="auto">
+        <source src="audio/Sound_4.ogg" type="audio/ogg">
+        
+      </audio>
+      <audio id="myaudio5" preload="auto">
+        <source src="audio/Sound_5.ogg" type="audio/ogg">
+       
+      </audio>
+      <audio id="myaudio6" preload="auto">
+        <source src="audio/Sound_6.ogg" type="audio/ogg">
+        
+      </audio>
+			<script>
+				var myaudio1 = document.getElementById("myaudio1"); myaudio1.volume=0.25;
+				$("#myblock1").mouseenter(function(){myaudio1.play();}); 
+				var myaudio2 = document.getElementById("myaudio2"); myaudio2.volume=0.35;
+				$("#myblock5").mouseenter(function(){myaudio2.play();});
+				var myaudio3 = document.getElementById("myaudio3"); myaudio3.volume=0.35;
+				$("#myblock3").mouseenter(function(){myaudio3.play();});
+				var myaudio4 = document.getElementById("myaudio4"); myaudio4.volume=0.35;
+				$("#myblock4").mouseenter(function(){myaudio4.play();});
+				var myaudio5 = document.getElementById("myaudio5"); myaudio5.volume=0.25;
+				$("#myblock2").mouseenter(function(){myaudio5.play();});
+				var myaudio6 = document.getElementById("myaudio6"); myaudio6.volume=0.3;
+				$("#myblock6").mouseenter(function(){myaudio6.play();});
+			</script>
+			-->
+
+			<div id="footer" class="footer-text">.
+				<div class="container-footer">
+					<div id="footer-img" style="background-image: url('img/trees.gif');"> </div>
+				</div>
+			</div>
+
+		</div>
+  </body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta http-equiv="Content-Language" content="ru">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="refresh" content="">
+    <meta name="description" content="Growbox">   
+    <title>Growbox</title>
+    <link rel="stylesheet" href="light.css">
+    <link rel="stylesheet" href="navigation.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="shortcut icon" sizes="72x72" href="img/favicon.ico" type="image/x-icon">
+    <script src="jquery.min.js"></script>
+    <script src="common.js"></script>
+    <script>
+        $(window).load(set_screen_vh);
+        $(window).resize(set_screen_vh);
+        $(window).on('load resize', set_screen_vh);
+
+        var xhr;
+        var powerTimer;
+        var chpwrTimer;
+        var smoothTimer;
+        var startTimer;
+        var stopTimer;
+        var currTimer;
+
+        var ch1_color = '#FFFFD6';  // White
+        var ch2_color = '#E73B2D';  // Red
+        var ch3_color = '#1c6eb4';  // Blue
+
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+        function update_slider(id, color)
+        {
+            var val = (id.value - id.getAttribute('min')) / (id.getAttribute('max') - id.getAttribute('min'));
+            var percent = val * 100;
+
+            id.style = "background-image: " + '-webkit-gradient(linear, left top, right top, ' + 
+                            'color-stop(' + percent + '%, ' + color + '), ' + 'color-stop(' + percent + '%, #222)' + ');' +
+                        'background-image: ' + '-moz-linear-gradient(left center, ' + color + ' 0%, red ' + 
+                            percent + '%, #222 ' + percent + '%, #222 100%);';
+        }
+
+        function update()
+        {
+            xhr = new(XMLHttpRequest);
+
+            clearTimeout(powerTimer);
+
+            xhr.open("GET", "flc/update", true);
+            xhr.responseType = "text";
+            xhr.onload = function (oEvent) 
+            {
+                console.log("Response:\n" + xhr.responseText);
+                var json = JSON.parse(xhr.responseText);
+
+                if(json.result_text == "OK" && !json.result_code){
+                    addPlaceholder('power_state', json.power_state);
+                    addPlaceholder('curr_hour', json.curr_hour);
+                    addPlaceholder('curr_min', json.curr_min);
+                    addPlaceholder('curr_sec', json.curr_sec);
+                    addPlaceholder('start_hour', json.start_hour);
+                    addPlaceholder('start_min', json.start_min);
+                    addPlaceholder('start_sec', json.start_sec);
+                    addPlaceholder('stop_hour', json.stop_hour);
+                    addPlaceholder('stop_min', json.stop_min);
+                    addPlaceholder('stop_sec', json.stop_sec);
+                    addPlaceholder('smooth_value', json.smooth_value);
+                    document.getElementById("ch1_value").innerHTML = document.getElementById('ch1_range').value= json.white_power;
+                    document.getElementById("ch2_value").innerHTML = document.getElementById('ch2_range').value= json.red_power; 
+                    document.getElementById("ch3_value").innerHTML = document.getElementById('ch3_range').value= json.blue_power;
+                }   
+                else{
+                    addPlaceholder('power_state', "-");
+                    addPlaceholder('curr_hour', "-");
+                    addPlaceholder('curr_min', "-");
+                    addPlaceholder('curr_sec', "-");
+                    addPlaceholder('start_hour', "-");
+                    addPlaceholder('start_min', "-");
+                    addPlaceholder('start_sec', "-");
+                    addPlaceholder('stop_hour', "-");
+                    addPlaceholder('stop_min', "-");
+                    addPlaceholder('stop_sec', "-");
+                    addPlaceholder('smooth_value', "-");
+                    document.getElementById("ch1_value").innerHTML = "? ";
+                    document.getElementById("ch2_value").innerHTML = "? ";
+                    document.getElementById("ch3_value").innerHTML = "? ";
+                }
+                document.getElementById("curr_hour").value = "";
+                document.getElementById("curr_min").value = "";
+                document.getElementById("curr_sec").value = "";
+                document.getElementById("start_hour").value = "";
+                document.getElementById("start_min").value = "";
+                document.getElementById("start_sec").value = "";
+                document.getElementById("stop_hour").value = "";
+                document.getElementById("stop_min").value = "";
+                document.getElementById("stop_sec").value = "";
+                document.getElementById("smooth_value").value = "";
+ 
+                update_slider(document.getElementById("ch1_range"), ch1_color);
+                update_slider(document.getElementById("ch2_range"), ch2_color);
+                update_slider(document.getElementById("ch3_range"), ch3_color);
+
+                var t_on = document.getElementById("pwr_on");
+                var t_off= document.getElementById("pwr_off");
+
+                if(json.power_state) {
+                    t_on.setAttribute("checked", "checked");
+                    t_on.checked = true;
+                    t_off.removeAttribute("checked");
+                    t_off.checked = false;
+                }
+                else{
+                    t_off.setAttribute("checked", "checked");
+                    t_off.checked = true;
+                    t_on.removeAttribute("checked");
+                    t_on.checked = false;
+                }
+
+                t_on = document.getElementById("smooth_on");
+                t_off= document.getElementById("smooth_off");
+
+
+                if(json.smooth) {
+                    t_on.setAttribute("checked", "checked");
+                    t_on.checked = true;
+                    t_off.removeAttribute("checked");
+                    t_off.checked = false;
+                }
+                else{
+                    t_off.setAttribute("checked", "checked");
+                    t_off.checked = true;
+                    t_on.removeAttribute("checked");
+                    t_on.checked = false;
+                }
+
+            }
+            xhr.send(null);
+
+        }
+
+        function send_smooth_req()
+        {
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "flc/smooth_control", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            var t_on = document.getElementById("smooth_on");
+            
+            var data = JSON.stringify({ "smooth_control": t_on.checked });
+            
+            xhr.onload = function (oEvent) 
+            {
+                console.log("Response:\n" + xhr.responseText);
+                var json = JSON.parse(xhr.responseText);
+                var id = document.getElementById("smooth_btn");
+                if (json.result_text == "OK") show_ok(id, smoothTimer, "smooth", "Set");
+                else show_error(id, smoothTimer, "smooth", json.result_code, "Set");
+            }
+            //console.log("Sending request: \n" + data);
+            xhr.send(data);          
+        }
+
+        function send_smooth_value_req()
+        {
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "flc/smooth_value", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            var data = JSON.stringify({ "smooth_value": Number(document.getElementById("smooth_value").value) });
+            
+            xhr.onload = function (oEvent) 
+            {
+                console.log("Response:\n" + xhr.responseText);
+                var json = JSON.parse(xhr.responseText);
+                var id = document.getElementById("smooth_value_btn");
+                if (json.result_text == "OK") show_ok(id, smoothTimer, "smooth-value", "Set");
+                else show_error(id, smoothTimer, "smooth-value", json.result_code, "Set");
+            }
+            console.log("Sending request: \n" + data);
+            xhr.send(data);          
+        }
+
+        function send_ch_pwr_req(ch_num)
+        {
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "flc/ch_power", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            var data;
+
+            if(ch_num == 1) {data = JSON.stringify({"ch1_power": Number(document.getElementById("ch1_range").value)}); }
+            else if (ch_num == 2) {data = JSON.stringify({"ch2_power": Number(document.getElementById("ch2_range").value)}); }
+            else if (ch_num == 3) {data = JSON.stringify({"ch3_power": Number(document.getElementById("ch3_range").value)}); }
+            else{
+                data = JSON.stringify({ "ch1_power": Number(document.getElementById("ch1_range").value), 
+                                        "ch2_power": Number(document.getElementById("ch2_range").value), 
+                                        "ch3_power": Number(document.getElementById("ch3_range").value) });
+            }
+
+            xhr.onload = function (oEvent) 
+            {
+                console.log("Response:\n" + xhr.responseText);
+                var json = JSON.parse(xhr.responseText);
+                var id = document.getElementById("chpwr_btn");
+                if (json.result_text == "OK") show_ok(id, chpwrTimer, "channel", "Set");
+                else show_error(id, chpwrTimer, "channel", json.result_code, "Set");
+            }
+
+            //console.log("Sending request: \n" + data);
+            xhr.send(data);          
+        }
+
+        function send_time_req(type)
+        {
+            xhr = new XMLHttpRequest();
+            xhr.open("POST", "flc/"+ type +"_time", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            var data;
+            var id;
+            var timer;
+
+            if (type == "current"){
+                check_value("curr_hour", 23);
+                check_value("curr_min", 59);
+                check_value("curr_sec", 59);
+                data = create_time_json("curr");
+                id = document.getElementById("curr_btn");
+                timer = currTimer;
+            }
+            else if (type == "start"){
+                check_value("start_hour", 23);
+                check_value("start_min", 59);
+                check_value("start_sec", 59);
+                data = create_time_json("start");
+                id = document.getElementById("start_btn");
+                timer = startTimer;
+            }
+            else{
+                check_value("stop_hour", 23);
+                check_value("stop_min", 59);
+                check_value("stop_sec", 59);
+                data = create_time_json("stop");
+                id = document.getElementById("stop_btn");
+                timer = stopTimer;
+            }
+
+            xhr.onload = function (oEvent) 
+            {
+                console.log("Response:\n" + xhr.responseText);
+                var json = JSON.parse(xhr.responseText);
+                if (json.result_text == "OK") show_ok(id, timer, "rtc", "Set");
+                else show_error(id, timer, "rtc", json.result_code, "Set");
+            }
+
+            //console.log("Sending request: \n" + data);
+            xhr.send(data); 
+
+            powerTimer = setTimeout("update()", 2500);
+        }
+            
+    </script>
+    </head>
+
+    <body onload="update()">
+
+        <div class="my-body">
+
+          <div class="header-wrap">
+              
+            <div class="mainmenu-btn">
+              <form method="get" action="return_mainmenu" enctype="text-plain">
+                <div class="container-navigation-btn">
+                  <button class="navigation-btn navigation-btn-text" name="" value="">
+                    Main menu
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="refresh-btn">
+              <div class="container-navigation-btn">
+                <button class="navigation-btn navigation-btn-text" onclick="update()">
+                  Refresh
+                </button>
+              </div> 
+            </div>
+
+          </div>
+
+          <div class="header-line header-dull-side-color" style="">
+            <h1 class="header-text">Light</h1>                
+            <div id="header_btn" class="container-header-btn">
+                <button class="header-btn header-bright-side-color" onclick="default()">
+                    <pre class="header-btn-text">Control</pre>
+                </button>
+            </div>  
+            <img class="light-header-img" alt="" src="img/flc.gif">                           
+          </div>
+
+          <div class="menu-wrap">
+
+                <div class="container-menu">
+                    <div id="power_state" class="cells-container">
+                        <div class = "cell-name cell-name-text"><span>Power<br>state</span><span class="toggle-off">Off</span><span class="toggle-on">On</span></div>
+                        <div>
+                            <div class="toggle-bg">
+                                <input id="pwr_off" type="radio" name="power_state" value="off">
+                                <input id="pwr_on" type="radio" name="power_state" value="on"> 
+                                <span class="switch"></span>
+                            </div>
+                        </div>                  
+                    </div>
+                </div>
+
+                <div class="container-menu">
+                    <div id="current_time" class="cells-container">
+                        <div class = "cell-name cell-name-text"><span>Current<br>time</span></div>
+                        <div class="cell-value-rtc" autocomplete="off">
+                            <input class="cell-input-rtc input-text" id="curr_hour" type="text" name="1" placeholder="-" max="23" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <input class="cell-input-rtc input-text" id="curr_min" type="text" name="" placeholder="-" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <input class="cell-input-rtc input-text" id="curr_sec" type="text" name="" placeholder="-" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <div class="container-cell-btn">
+                                <button id="curr_btn" class="ctrl-button cell-btn-rtc ctrl-btn-color ctrl-btn-text" onclick = "send_time_req('current')">
+                                    Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-menu">
+                    <div id="start_time" class="cells-container">
+                        <div class = "cell-name cell-name-text"><span>Start<br>time</span></div>
+                        <div class="cell-value-rtc" autocomplete="off">
+                            <input class="cell-input-rtc input-text" id="start_hour" type="text" name="" placeholder="-" max="23" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <input class="cell-input-rtc input-text" id="start_min" type="text" name="" placeholder="-" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <input class="cell-input-rtc input-text" id="start_sec" type="text" name="" placeholder="-" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <div class="container-cell-btn">
+                                <button id="start_btn" class="ctrl-button cell-btn-rtc ctrl-btn-color ctrl-btn-text" onclick = "send_time_req('start')">
+                                    Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-menu" >
+                    <div id="stop_time" class="cells-container">
+                        <div class = "cell-name cell-name-text"><span>Stop<br>time</span></div>
+                        <div class="cell-value-rtc" autocomplete="off">
+                            <input class="cell-input-rtc input-text" id="stop_hour" type="text" name="hour" placeholder="-" max="23" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <input class="cell-input-rtc input-text" id="stop_min" type="text" name="min" placeholder="-" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <input class="cell-input-rtc input-text" id="stop_sec" type="text" name="sec" placeholder="-" max="59" min="0" maxlength="2" onkeypress='validate_int(event)'>
+                            <div class="container-cell-btn">
+                                <button id="stop_btn" class="ctrl-button cell-btn-rtc ctrl-btn-color ctrl-btn-text" onclick = "send_time_req('stop')">
+                                    Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-menu">
+                    <div id="smooth_control" class="cells-container">
+                        <div class = "cell-name cell-name-text"><span>Smooth<br>control</span><span class="toggle-off" style="right:5%;">Disabled</span><span class="toggle-on">Enabled</span></div>
+                        <div>
+                            <div class="toggle-bg">
+                                <input id="smooth_off" type="radio" name="state" value="disabled">
+                                <input id="smooth_on" type="radio" name="state" value="enabled"> 
+                                <span class="switch"></span>
+                            </div>
+
+                            <div class="container-cell-btn">
+                                <button id="smooth_btn" class="ctrl-button cell-btn-smooth ctrl-btn-color ctrl-btn-text" onclick="send_smooth_req()">
+                                    Set
+                                </button>
+                            </div>              
+                        </div>     
+                    </div>
+                </div>
+
+                 <div class="container-menu">
+                    <div id="smooth_value_cell" class="cells-container">
+                        <div class = "cell-name cell-name-text"><span>Smooth<br>value</span><span class="toggle-off" style="right:5%;">
+                        </div>
+                        <div>
+                            <div class="cell-value-smooth-value">
+                                <input class="cell-input-smooth-value input-text" id="smooth_value" type="text" name="" placeholder="-" max="65355" min="0" maxlength="5" onkeypress='validate_int(event)' >
+                                <button id="smooth_value_btn" class="ctrl-button cell-btn-smooth-value ctrl-btn-color ctrl-btn-text" onclick="send_smooth_value_req()">
+                                    Set
+                                </button>
+                            </div>              
+                        </div>     
+                    </div>
+                </div>
+                            
+                <div class="container-menu" style="flex:  0 3 75%;">
+                    
+                    <div class = "cell-sliders-name cell-name-text"><span>Channels power</span>
+                        <hr class="ch-devider" noshade size="1" color="#000000" >
+                    </div>
+
+                    <div class = "container-channel">
+                        <pre class="channel-name" style="left: 10%;">CH-1</pre>
+                        <p class="channel-value" style="margin-left: 10%;">Value:<br><span id="ch1_value"></span>%</p>
+                       
+                        <form class ="container-channel-form" method="get" action="flc/power" enctype="text-plain">
+                            <input class="light-range" type="range" name="ch1" min="0" max="100" value="50"  id="ch1_range" >
+                        </form>
+                    </div>
+
+                    <script>
+                        var slider1 = document.getElementById("ch1_range");
+                        var output1 = document.getElementById("ch1_value");
+                        output1.innerHTML = slider1.value;
+
+                        slider1.oninput = function() {
+                          output1.innerHTML = this.value;
+                        }
+                        // https://jsfiddle.net/daltonrenaldo/4zxm7fw0/
+                        $("input[name=ch1]").mousemove(function (e) {
+                            var val = ($(this).val() - $(this).attr('min')) / ($(this).attr('max') - $(this).attr('min'));
+                            var percent = val * 100;
+
+                            $(this).css('background-image',
+                                '-webkit-gradient(linear, left top, right top, ' +
+                                'color-stop(' + percent + '%, ' + ch1_color + '), ' +
+                                'color-stop(' + percent + '%, #222)' +
+                                ')');
+
+                            $(this).css('background-image',
+                                '-moz-linear-gradient(left center, ' + ch1_color + ' 0%, ' + ch1_color + ' ' + percent + '%, #222 ' + percent + '%, #222 100%)');
+                        });
+                    </script>
+
+                    <div class = "container-channel" style="left: 0%;">
+                        <pre class="channel-name" style="left: 10%;">CH-2</pre>
+                        <p class="channel-value" style="margin-left: 10%;">Value:<br><span id="ch2_value"></span>%</p>
+                       
+                        <div class ="container-channel-form" >
+                            <input class="light-range" type="range" name="ch2" min="0" max="100" value="50"  id="ch2_range" >
+
+                            <div class="container-slider-btn">
+                                <button id="chpwr_btn" class="ctrl-button cell-btn-channel ctrl-btn-color ctrl-btn-text" onclick="send_ch_pwr_req(0)">
+                                    Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        var slider2 = document.getElementById("ch2_range");
+                        var output2 = document.getElementById("ch2_value");
+                        output2.innerHTML = slider2.value;
+
+                        slider2.oninput = function() {
+                          output2.innerHTML = this.value;
+                        }
+
+                        // https://jsfiddle.net/daltonrenaldo/4zxm7fw0/
+                        $("input[name=ch2]").mousemove(function (e) {
+                            var val = ($(this).val() - $(this).attr('min')) / ($(this).attr('max') - $(this).attr('min'));
+                            var percent = val * 100;
+
+                            $(this).css('background-image',
+                                '-webkit-gradient(linear, left top, right top, ' +
+                                'color-stop(' + percent + '%, ' + ch2_color + '), ' +
+                                'color-stop(' + percent + '%, #222)' +
+                                ')');
+
+                            $(this).css('background-image',
+                                '-moz-linear-gradient(left center, ' + ch2_color + ' 0%, ' + ch2_color + ' ' + percent + '%, #222 ' + percent + '%, #222 100%)');
+                        });
+                    </script>
+
+                    <div class = "container-channel" style="left: 0%;">
+                        <pre class="channel-name" style="left: 10%;">CH-3</pre>
+                        <p class="channel-value" style="margin-left: 10%;">Value:<br><span id="ch3_value"></span>%</p>
+                       
+                        <form class ="container-channel-form" method="post" action="flc/ch_power" enctype="text-plain">
+                            <input class="light-range" type="range" name="ch3" min="0" max="100" value="50" id="ch3_range" >
+                        </form>
+                    </div>
+
+                    <script>
+                        var slider3 = document.getElementById("ch3_range");
+                        var output3 = document.getElementById("ch3_value");
+                        output3.innerHTML = slider3.value;
+
+                        slider3.oninput = function() {
+                          output3.innerHTML = this.value;
+                        }
+
+                        // https://jsfiddle.net/daltonrenaldo/4zxm7fw0/
+                        $("input[name=ch3]").mousemove(function (e) {
+                            var val = ($(this).val() - $(this).attr('min')) / ($(this).attr('max') - $(this).attr('min'));
+                            var percent = val * 100;
+
+                            $(this).css('background-image',
+                                '-webkit-gradient(linear, left top, right top, ' +
+                                'color-stop(' + percent + '%, ' + ch3_color + '), ' +
+                                'color-stop(' + percent + '%, #222)' +
+                                ')');
+
+                            $(this).css('background-image',
+                                '-moz-linear-gradient(left center, ' + ch3_color + ' 0%, ' + ch3_color + ' ' + percent + '%, #222 ' + percent + '%, #222 100%)');
+                        });
+                    </script>
+                
+                    
+
+                </div>
+
+            </div>
+
+            <div id="footer" class="footer-text">. 
+                <div class="container-footer">
+                    <div id="footer-img" style="background-image: url('img/trees.gif');"> </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
