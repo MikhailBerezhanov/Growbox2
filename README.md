@@ -1,5 +1,5 @@
 # Growbox2
-### Automated indoor grow planting system
+### Automated plants growing indoor system
 
 ([Learn more about this project](https://habr.com/ru/post/521414/))
 
