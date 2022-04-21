@@ -3,6 +3,7 @@
 
 ([Learn more about this project](https://habr.com/ru/post/521414/))
 
+![3Dmodel](https://hsto.org/webt/d5/gz/t8/d5gzt84uaz5kt1utfpehtzbn31q.gif)
 
 Growbox2 is an indoor system that takes care of your plants. It helps with:
 
